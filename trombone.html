@@ -1,0 +1,25 @@
+<!-- trombone.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Trombone Slide Position Finder</h2>
+    <form method="post">
+        <div class="form-group">
+            <label for="letter">Enter Note:</label>
+            <input type="text" class="form-control" id="letter" name="letter" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Find Position</button>
+    </form>
+    {% if result is not none %}
+    <div class="mt-3">
+        <h3>Slide Position: </h3>
+        <ul>
+            {% for pos in result %}
+            <li>{{ pos }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

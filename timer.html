@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="timer-container">
+        <h2>Set Timer</h2>
+        <form id="timerForm">
+            <div class="form-group">
+                <label for="timerSelect">Select Time Interval:</label>
+                <select id="timerSelect" class="form-control" required>
+                    <option value="" disabled selected>Select Interval</option>
+                    <option value="900">15 minutes</option>
+                    <option value="1800">30 minutes</option>
+                    <option value="2700">45 minutes</option>
+                    <option value="3600">1 hour</option>
+                </select>
+            </div>
+            <button type="submit" id="startTimer" class="btn btn-primary mt-2">Start Timer</button>
+        </form>
+
+        <div id="countdown" class="mt-4">00:00</div>
+        <div id="timerControls" class="controls mt-3">
+            <button id="pauseTimer" class="btn btn-warning">Pause</button>
+            <button id="unpauseTimer" class="btn btn-success">Unpause</button>
+            <button id="stopTimer" class="btn btn-danger">Stop</button>
+        </div>
+    </div>
+
+    <div class="timer-container mt-5">
+        <h2>Stopwatch</h2>
+        <div id="stopwatch" class="mb-3">00:00:00</div>
+        <div class="controls">
+            <button id="startStopwatch" class="btn btn-success">Start</button>
+            <button id="stopStopwatch" class="btn btn-danger">Stop</button>
+            <button id="resetStopwatch" class="btn btn-secondary">Reset</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Timer Functionality
+    let timerInterval;
+    let remainingTime;
+    let timerPaused = false;
+
+    document.getElementById('timerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+        const timerSelect = document.getElementById('timerSelect');
+        const selectedValue = parseInt(timerSelect.value);
+        startTimer(selectedValue);
+    });
+
+    document.getElementById('pauseTimer').addEventListener('click', function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerPaused = true;
+        }
+    });
+
+    document.getElementById('unpauseTimer').addEventListener('click', function() {
+        if (timerPaused && remainingTime > 0) {
+            startTimer(remainingTime); // Resume from remaining time
+            timerPaused = false;
+        }
+    });
+
+    document.getElementById('stopTimer').addEventListener('click', function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            document.getElementById('countdown').textContent = "00:00";
+            timerInterval = null;
+            timerPaused = false;
+        }
+    });
+
+    function startTimer(duration) {
+        remainingTime = duration;
+        timerInterval = setInterval(function () {
+            if (remainingTime <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('countdown').textContent = "Time's up!";
+                playAlarm();
+                return;
+            }
+
+            let minutes = Math.floor(remainingTime / 60);
+            let seconds = remainingTime % 60;
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            document.getElementById('countdown').textContent = minutes + ":" + seconds;
+            remainingTime--;
+        }, 1000);
+    }
+
+    function playAlarm() {
+        const audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+        audio.play();
+    }
+
+    // Stopwatch Functionality
+    let stopwatchInterval;
+    let stopwatchTime = 0; // in seconds
+
+    document.getElementById('startStopwatch').addEventListener('click', function() {
+        if (!stopwatchInterval) {
+            stopwatchInterval = setInterval(updateStopwatch, 1000);
+        }
+    });
+
+    document.getElementById('stopStopwatch').addEventListener('click', function() {
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+    });
+
+    document.getElementById('resetStopwatch').addEventListener('click', function() {
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+        stopwatchTime = 0;
+        document.getElementById('stopwatch').textContent = "00:00:00";
+    });
+
+    function updateStopwatch() {
+        stopwatchTime++;
+        const hours = Math.floor(stopwatchTime / 3600);
+        const minutes = Math.floor((stopwatchTime % 3600) / 60);
+        const seconds = stopwatchTime % 60;
+
+        const formattedHours = hours < 10 ? '0' + hours : hours;
+        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+        const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+
+        document.getElementById('stopwatch').textContent = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    }
+</script>
+{% endblock %}

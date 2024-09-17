@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Metronome</h1>
+    
+    <div class="form-group">
+        <label for="bpm">BPM (Beats Per Minute):</label>
+        <input type="number" id="bpm" class="form-control" value="120" min="40" max="208">
+    </div>
+
+    <button id="startMetronome" class="btn btn-primary">Start</button>
+    <button id="stopMetronome" class="btn btn-secondary" disabled>Stop</button>
+
+    <audio id="metronomeSound" src="{{ url_for('static', filename='metronome_click.mp3') }}" preload="auto"></audio>
+</div>
+
+<script>
+    let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let metronomeSound = document.getElementById('metronomeSound');
+    let isPlaying = false;
+    let startTime;
+    let currentBeat = 0;
+    let metronomeInterval;
+
+    document.getElementById('startMetronome').addEventListener('click', function() {
+        if (isPlaying) return;
+        isPlaying = true;
+        let bpm = parseInt(document.getElementById('bpm').value);
+        let interval = 60 / bpm; // Calculate the interval in seconds
+
+        // Schedule the first beat
+        startTime = audioContext.currentTime;
+        scheduleBeat(startTime);
+
+        // Schedule subsequent beats
+        metronomeInterval = setInterval(function() {
+            if (!isPlaying) {
+                clearInterval(metronomeInterval);
+                return;
+            }
+            currentBeat++;
+            let beatTime = startTime + currentBeat * interval;
+            scheduleBeat(beatTime);
+        }, interval * 1000);
+
+        document.getElementById('startMetronome').disabled = true;
+        document.getElementById('stopMetronome').disabled = false;
+    });
+
+    document.getElementById('stopMetronome').addEventListener('click', function() {
+        isPlaying = false;
+        document.getElementById('startMetronome').disabled = false;
+        document.getElementById('stopMetronome').disabled = true;
+    });
+
+    function scheduleBeat(beatTime) {
+        let source = audioContext.createBufferSource();
+        let request = new XMLHttpRequest();
+        request.open('GET', metronomeSound.src, true);
+        request.responseType = 'arraybuffer';
+        request.onload = function() {
+            audioContext.decodeAudioData(request.response, function(buffer) {
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                source.start(beatTime);
+            });
+        };
+        request.send();
+    }
+</script>
+{% endblock %}

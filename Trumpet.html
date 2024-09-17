@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Letter to Fingering Converter - Trumpet</h1>
+    <img src="{{ url_for('static', filename='Trumpet.png') }}" alt="trumpet" class="img-fluid mb-3">
+    <form method="post">
+        <div class="form-group">
+            <label for="letter">Enter a letter (e.g., A, A#, Bb, etc.):</label>
+            <input type="text" class="form-control" id="letter" name="letter" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Convert</button>
+    </form>
+    {% if result is not none %}
+        <div class="mt-3 alert alert-info">
+            Result: {{ result }}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
