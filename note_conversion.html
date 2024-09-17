@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Note Conversion Logs</h1>
+
+    <div class="alert alert-info text-center mb-4">
+        <h4 class="alert-heading">Welcome to the Note Conversion Tool!</h4>
+        <p>Have you ever wished you could effortlessly convert note sequences between different instruments? Now you can! Our Note Conversion Tool is here to make your musical life easier.</p>
+        <p>With this tool, you can:</p>
+        <ul class="list-unstyled">
+            <li>Convert note sequences for various instruments in no time.</li>
+            <li>Save your conversions so you don't have to retype them.</li>
+            <li>Review and manage your conversion history with ease.</li>
+        </ul>
+        <p>Simply enter your notes, choose your instrument, and let the tool do the magic!</p>
+    </div>
+
+    <!-- Conversion Form -->
+    <form method="post" action="{{ url_for('note_conversion') }}" class="mb-4">
+        <div class="form-group">
+            <label for="instrument">Select Instrument:</label>
+            <select id="instrument" name="instrument" class="form-control" required>
+                <option value="">Select an instrument</option>
+                <option value="trumpet">Trumpet</option>
+                <option value="mellophone">Mellophone</option>
+                <option value="baritone">Baritone</option>
+                <option value="tuba">Tuba</option>
+                <option value="trombone">Trombone</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="notes_sequence">Enter Notes Sequence (comma separated):</label>
+            <input type="text" id="notes_sequence" name="notes_sequence" class="form-control" placeholder="C, D, E, F, G" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Convert Notes</button>
+    </form>
+
+    {% if sequence_result %}
+    <div class="alert alert-success mt-4">
+        <h3>Conversion Result</h3>
+        <p><strong>Original Sequence:</strong> {{ notes_sequence | join(', ') }}</p>
+        <p><strong>Converted Sequence:</strong> {{ sequence_result | join(', ') }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Conversion Logs -->
+    <div class="mt-5">
+        <h3 class="mb-4">Conversion History</h3>
+        {% if conversion_logs %}
+            <div class="list-group">
+                {% for log in conversion_logs %}
+                    <div class="list-group-item">
+                        <h5 class="mb-1">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</h5>
+                        <p class="mb-1"><strong>Instrument:</strong> {{ log.instrument }}</p>
+                        <p class="mb-1"><strong>Notes Sequence:</strong> {{ log.notes_sequence }}</p>
+                        <p class="mb-1"><strong>Converted Sequence:</strong> {{ log.converted_sequence }}</p>
+                        <form method="post" action="{{ url_for('delete_conversion_log', log_id=log.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete Log</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center">No conversion logs available yet. Start converting notes and they will appear here!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

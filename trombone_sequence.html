@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Trombone Techniques & Slide Position Finder</h2>
+
+    <!-- Trombone Techniques Section -->
+    <div class="row mb-5">
+        <!-- Left Image Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='trombone_left.jpg') }}" class="card-img-top trombone-image" alt="Trombone Slide Positions">
+                <div class="card-body">
+                    <h4 class="card-title">Slide Positions</h4>
+                    <p class="card-text">The trombone slide has seven positions, from 1st (all the way in) to 7th (fully extended). Players learn these by feel rather than visual markers, similar to violins. Each slide position can produce multiple notes, depending on how you blow into the instrument.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Right Image Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='trombone_right.jpg') }}" class="card-img-top trombone-image" alt="Trombone Mouth Technique">
+                <div class="card-body">
+                    <h4 class="card-title">Mouth Technique</h4>
+                    <p class="card-text">Trombones do not have finger holes; the sound is adjusted with the mouth. Tighten your lips for higher notes and loosen for lower ones. This, combined with the slide position, determines the note played.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trombone Playing Techniques Section -->
+    <div class="mt-5">
+        <h3>Playing the Trombone</h3>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>Blowing Technique</h4>
+                <p>Blow through the mouthpiece with an "o" shape with your lips. Keep the center of your lips loose and firm the corners to create a steady, vibrating sound. Avoid puffing your cheeks to maintain a clear tone and effective breathing.</p>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>Higher Pitched Notes</h4>
+                <p>Tighten your lips and increase the speed of the air for higher pitches. Your jaw will naturally lift, and the air should move downward. Ensure that your sound remains clear and resist pressing too hard against the mouthpiece.</p>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>Lower Pitched Notes</h4>
+                <p>Loosen your lips and drop your jaw for lower pitches. Maintain a steady and fast airflow, and be prepared to use more air to support the sound. Increasing lung capacity will help in producing well-supported lower notes.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Sequence Converter Section -->
+    <div class="card p-4 mb-5">
+        <h3 class="card-title mb-3">Trombone Slide Position Finder</h3>
+        <p class="card-text mb-4">Enter a sequence of notes to find the corresponding slide positions. To ensure accurate results, specify if a note is particularly high or low by prefixing with <code>Hi</code> or <code>Lo</code>. For example, type <code>HiG</code> for high G and <code>LoG#</code> for low G#.</p>
+
+        <form method="post">
+            <div class="form-group mb-3">
+                <label for="notes_sequence">Enter Sequence of Notes:</label>
+                <input type="text" class="form-control" id="notes_sequence" name="notes_sequence" placeholder="C D E F G" required>
+                <small class="form-text text-muted">Separate notes with spaces (e.g., C D E F G). Use <code>Hi</code> for high notes and <code>Lo</code> for low notes (e.g., <code>HiG</code>, <code>LoG#</code>).</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Find Positions</button>
+        </form>
+
+        {% if sequence_result is not none %}
+        <div class="mt-4">
+            <h4>Your Notes:</h4>
+            <p class="lead">{{ notes_sequence | join(' ') }}</p>
+            <h4>Slide Positions:</h4>
+            <p class="lead">{{ sequence_result | join(' ') }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Optional: Add some JavaScript to enhance interactivity if needed -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Example: Add tooltips or other interactive features
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+
+<!-- Add custom CSS for consistent image sizes -->
+<style>
+    .trombone-image {
+        width: 100%;
+        height: auto;
+        max-height: 300px; /* Adjust as needed */
+        object-fit: cover; /* Ensures images cover the specified dimensions without distortion */
+    }
+</style>
+{% endblock %}

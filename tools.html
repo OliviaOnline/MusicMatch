@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Timer and Stopwatch Section -->
+        <div class="col-md-6">
+            <div class="timer-container">
+                <h2>Set Timer</h2>
+                <form id="timerForm">
+                    <div class="form-group">
+                        <label for="timerSelect">Select Time Interval:</label>
+                        <select id="timerSelect" class="form-control" required>
+                            <option value="" disabled selected>Select Interval</option>
+                            <option value="900">15 minutes</option>
+                            <option value="1800">30 minutes</option>
+                            <option value="2700">45 minutes</option>
+                            <option value="3600">1 hour</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="startTimer" class="btn btn-primary mt-2">Start Timer</button>
+                </form>
+
+                <div id="countdown" class="mt-4">00:00</div>
+                <div id="timerControls" class="controls mt-3">
+                    <button id="pauseTimer" class="btn btn-warning" disabled>Pause</button>
+                    <button id="unpauseTimer" class="btn btn-success" disabled>Unpause</button>
+                    <button id="stopTimer" class="btn btn-danger" disabled>Stop</button>
+                </div>
+            </div>
+
+            <div class="timer-container mt-5">
+                <h2>Stopwatch</h2>
+                <div id="stopwatch" class="mb-3">00:00:00</div>
+                <div class="controls">
+                    <button id="startStopwatch" class="btn btn-success">Start</button>
+                    <button id="stopStopwatch" class="btn btn-danger" disabled>Stop</button>
+                    <button id="resetStopwatch" class="btn btn-secondary">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metronome Section -->
+        <div class="col-md-6">
+            <h2>Metronome</h2>
+
+            <div class="form-group">
+                <label for="bpm">BPM (Beats Per Minute):</label>
+                <input type="number" id="bpm" class="form-control" value="120" min="40" max="208">
+            </div>
+
+            <button id="startMetronome" class="btn btn-primary">Start</button>
+            <button id="stopMetronome" class="btn btn-secondary" disabled>Stop</button>
+
+            <audio id="metronomeSound" src="{{ url_for('static', filename='metronome_click.mp3') }}" preload="auto"></audio>
+
+            <!-- Note about refreshing the page -->
+            <p class="mt-2 text-danger"><small>Note: After starting the metronome, you need to refresh the page to change the BPM.</small></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>
+
+<script>
+    // Timer Functionality
+    let timerInterval;
+    let remainingTime;
+    let timerPaused = false;
+
+    function updateButtonStates() {
+        const timerRunning = !!timerInterval;
+        document.getElementById('pauseTimer').disabled = !timerRunning || timerPaused;
+        document.getElementById('unpauseTimer').disabled = !timerPaused;
+        document.getElementById('stopTimer').disabled = !timerRunning;
+    }
+
+    document.getElementById('timerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+        const timerSelect = document.getElementById('timerSelect');
+        const selectedValue = parseInt(timerSelect.value);
+        startTimer(selectedValue);
+        document.getElementById('startTimer').disabled = true; // Disable the Start Timer button after starting
+    });
+
+    document.getElementById('pauseTimer').addEventListener('click', function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerPaused = true;
+            updateButtonStates();
+        }
+    });
+
+    document.getElementById('unpauseTimer').addEventListener('click', function() {
+        if (timerPaused && remainingTime > 0) {
+            startTimer(remainingTime); // Resume from remaining time
+            timerPaused = false;
+            updateButtonStates();
+        }
+    });
+
+    document.getElementById('stopTimer').addEventListener('click', function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            document.getElementById('countdown').textContent = "00:00";
+            timerInterval = null;
+            timerPaused = false;
+            updateButtonStates();
+        }
+    });
+
+    function startTimer(duration) {
+        remainingTime = duration;
+        timerInterval = setInterval(function () {
+            if (remainingTime <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('countdown').textContent = "Time's up!";
+                playAlarm();
+                return;
+            }
+
+            let minutes = Math.floor(remainingTime / 60);
+            let seconds = remainingTime % 60;
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            document.getElementById('countdown').textContent = minutes + ":" + seconds;
+            remainingTime--;
+        }, 1000);
+        updateButtonStates();
+    }
+
+    function playAlarm() {
+        const audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+        audio.play();
+    }
+
+    // Stopwatch Functionality
+let stopwatchInterval;
+let stopwatchTime = 0; // in seconds
+
+function updateStopwatchButtonStates() {
+    const stopwatchRunning = !!stopwatchInterval;
+    document.getElementById('stopStopwatch').disabled = !stopwatchRunning;
+    document.getElementById('resetStopwatch').disabled = stopwatchTime === 0 && !stopwatchRunning;
+}
+
+document.getElementById('startStopwatch').addEventListener('click', function() {
+    if (!stopwatchInterval) {
+        stopwatchInterval = setInterval(updateStopwatch, 1000);
+        updateStopwatchButtonStates();
+    }
+});
+
+document.getElementById('stopStopwatch').addEventListener('click', function() {
+    clearInterval(stopwatchInterval);
+    stopwatchInterval = null;
+    updateStopwatchButtonStates();
+});
+
+document.getElementById('resetStopwatch').addEventListener('click', function() {
+    clearInterval(stopwatchInterval);
+    stopwatchInterval = null;
+    stopwatchTime = 0;
+    document.getElementById('stopwatch').textContent = "00:00:00";
+    updateStopwatchButtonStates();
+});
+
+function updateStopwatch() {
+    stopwatchTime++;
+    const hours = Math.floor(stopwatchTime / 3600);
+    const minutes = Math.floor((stopwatchTime % 3600) / 60);
+    const seconds = stopwatchTime % 60;
+
+    const formattedHours = hours < 10 ? '0' + hours : hours;
+    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+    const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+
+    document.getElementById('stopwatch').textContent = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+}
+
+    // Metronome Functionality
+    let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let metronomeSound = document.getElementById('metronomeSound');
+    let isPlaying = false;
+    let startTime;
+    let currentBeat = 0;
+    let metronomeInterval;
+
+    document.getElementById('startMetronome').addEventListener('click', function() {
+        if (isPlaying) return;
+        isPlaying = true;
+        let bpm = parseInt(document.getElementById('bpm').value);
+        let interval = 60 / bpm; // Calculate the interval in seconds
+
+        // Schedule the first beat
+        startTime = audioContext.currentTime;
+        scheduleBeat(startTime);
+
+        // Schedule subsequent beats
+        metronomeInterval = setInterval(function() {
+            if (!isPlaying) {
+                clearInterval(metronomeInterval);
+                return;
+            }
+            currentBeat++;
+            let beatTime = startTime + currentBeat * interval;
+            scheduleBeat(beatTime);
+        }, interval * 1000);
+
+        document.getElementById('startMetronome').disabled = true;
+        document.getElementById('stopMetronome').disabled = false;
+    });
+
+    document.getElementById('stopMetronome').addEventListener('click', function() {
+        isPlaying = false;
+        document.getElementById('startMetronome').disabled = false;
+        document.getElementById('stopMetronome').disabled = true;
+    });
+
+    function scheduleBeat(beatTime) {
+        let source = audioContext.createBufferSource();
+        let request = new XMLHttpRequest();
+        request.open('GET', metronomeSound.src, true);
+        request.responseType = 'arraybuffer';
+        request.onload = function() {
+            audioContext.decodeAudioData(request.response, function(buffer) {
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                source.start(beatTime);
+            });
+        };
+        request.send();
+    }
+</script>
+{% endblock %}

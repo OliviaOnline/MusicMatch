@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Practice Log</h1>
+    <form method="post" action="{{ url_for('practice_log') }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.practice_details.label }}<br>
+            {{ form.practice_details(class="form-control", size=50) }}
+        </div>
+        <div class="form-group">
+            {{ form.practice_rating.label }}<br>
+            {{ form.practice_rating(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.practice_date.label }}<br>
+            {{ form.practice_date(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.start_time.label }}<br>
+            {{ form.start_time(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.end_time.label }}<br>
+            {{ form.end_time(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+
+    <!-- Filter by Month Section -->
+    <div class="mt-5">
+        <h3>Filter by Month</h3>
+        <select id="monthSelect" class="form-control">
+            <option value="">All Months</option>
+            <option value="2024-01">January 2024</option>
+            <option value="2024-02">February 2024</option>
+            <option value="2024-03">March 2024</option>
+            <option value="2024-04">April 2024</option>
+            <option value="2024-05">May 2024</option>
+            <option value="2024-06">June 2024</option>
+            <option value="2024-07">July 2024</option>
+            <option value="2024-08">August 2024</option>
+            <option value="2024-09">September 2024</option>
+            <option value="2024-10">October 2024</option>
+            <option value="2024-11">November 2024</option>
+            <option value="2024-12">December 2024</option>
+        </select>
+    </div>
+
+    <!-- Display Existing Practice Logs -->
+    <div class="mt-5">
+        <h3>Your Practice Logs</h3>
+        <div id="logsContainer" class="list-group">
+            {% if practice_logs %}
+                {% for log in practice_logs %}
+                    <div class="list-group-item" data-log-date="{{ log.date.strftime('%Y-%m') }}">
+                        <h5 class="mb-1">{{ log.date.strftime('%Y-%m-%d') }}</h5>
+                        <p class="mb-1"><strong>Details:</strong> {{ log.details }}</p>
+                        <small><strong>Rating:</strong> {{ log.rating }}</small><br>
+                        <small><strong>Duration:</strong> {{ log.get_duration_str() }}</small>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No practice logs found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <p id="noResultsMessage" style="display: none;">No results found for this month.</p>
+
+    <!-- Collected Badges Section -->
+    <div class="mt-5 badge-section">
+        <h3>Collected Badges</h3>
+        <div class="d-flex flex-wrap justify-content-end">
+            {% if show_badge_7_days %}
+                <div class="badge-container mr-3 mb-3">
+                    <img src="{{ url_for('static', filename='7_days.png') }}" alt="7 Days Badge" class="badge-icon-small">
+                    <p>7 Days Badge</p>
+                </div>
+            {% endif %}
+            {% if show_badge_14_days %}
+                <div class="badge-container mr-3 mb-3">
+                    <img src="{{ url_for('static', filename='14_days.png') }}" alt="14 Days Badge" class="badge-icon-small">
+                    <p>14 Days Badge</p>
+                </div>
+            {% endif %}
+            {% if show_badge_21_days %}
+                <div class="badge-container mr-3 mb-3">
+                    <img src="{{ url_for('static', filename='21_days.png') }}" alt="21 Days Badge" class="badge-icon-small">
+                    <p>21 Days Badge</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get logs and select elements
+    const logs = document.querySelectorAll('[data-log-date]');
+    const monthSelect = document.getElementById('monthSelect');
+    const logsContainer = document.getElementById('logsContainer');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+
+    // Filter logs based on the selected month
+    monthSelect.addEventListener('change', function () {
+        const selectedMonth = this.value;
+        let anyLogsVisible = false;
+
+        logs.forEach(log => {
+            if (selectedMonth === "" || log.getAttribute('data-log-date') === selectedMonth) {
+                log.style.display = '';
+                anyLogsVisible = true;
+            } else {
+                log.style.display = 'none';
+            }
+        });
+
+        // Show or hide "No results found" message
+        if (anyLogsVisible) {
+            logsContainer.style.display = '';
+            noResultsMessage.style.display = 'none';
+        } else {
+            logsContainer.style.display = 'none';
+            noResultsMessage.style.display = '';
+        }
+    });
+</script>
+
+<style>
+    .badge-section {
+        position: fixed;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 10px;
+        background: #fff;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+    }
+
+    .badge-icon-small {
+        width: 50px;
+        height: auto;
+    }
+</style>
+{% endblock %}

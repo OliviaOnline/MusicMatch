@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Trumpet Techniques & Valve Position Finder</h2>
+
+    <!-- Trumpet Techniques Section -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='trumpet_left.jpg') }}" class="card-img-top" alt="Breathing Technique">
+                <div class="card-body">
+                    <h4 class="card-title">Breathing Basics</h4>
+                    <p class="card-text">To produce a rich trumpet tone, practice diaphragmatic breathing. Breathe deeply into your belly, engaging your diaphragm for a fuller, more resonant sound. Use a mirror to check that your sides expand and shoulders stay still as you breathe.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='trumpet_right.jpg') }}" class="card-img-top" alt="Trumpet Positioning">
+                <div class="card-body">
+                    <h4 class="card-title">Posture and Positioning</h4>
+                    <p class="card-text">Proper posture is key to comfortable and effective trumpet playing. Sit on the edge of your chair with feet flat, back straight, and the trumpet angled slightly down. Position your hands carefully to maintain control.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <h4>The Buzz</h4>
+        <p>Master the "buzz" technique by forming your lips as if to say “m,” then adjust to create a buzzing sound. Place the mouthpiece correctly and experiment with lip tension to explore different pitches. This skill is crucial for controlling your tone and range.</p>
+    </div>
+
+    <!-- Interactive Sequence Converter Section -->
+    <div class="card p-4 mb-5">
+        <h3 class="card-title mb-3">Trumpet Valve Position Finder</h3>
+        <p class="card-text mb-4">Enter a sequence of notes to find the corresponding valve positions. To get the most accurate fingerings, make sure to specify if a note is particularly high or low. Prefix high notes with <code>Hi</code> and low notes with <code>Lo</code>. For example, type <code>HiF</code> for high F and <code>LoF#</code> for low F#.</p>
+
+        <form method="post">
+            <div class="form-group mb-3">
+                <label for="notes_sequence">Enter Sequence of Notes:</label>
+                <input type="text" class="form-control" id="notes_sequence" name="notes_sequence" placeholder="C D E F G" required>
+                <small class="form-text text-muted">Separate notes with spaces (e.g., C D E F G). Use <code>Hi</code> for high notes and <code>Lo</code> for low notes (e.g., <code>HiF</code>, <code>LoF#</code>).</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Find Positions</button>
+        </form>
+
+        {% if sequence_result is not none %}
+        <div class="mt-4">
+            <h4>Your Notes:</h4>
+            <p class="lead">{{ notes_sequence | join(' ') }}</p>
+            <h4>Valve Positions:</h4>
+            <p class="lead">{{ sequence_result | join(' ') }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Optional: Add some JavaScript to enhance interactivity if needed -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Example: Add tooltips or other interactive features
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+{% endblock %}

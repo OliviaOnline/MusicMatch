@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Music Match!</h1>
+        <p class="lead">Your ultimate tool for mastering brass instruments.</p>
+    </div>
+
+    <div class="row text-center mt-5">
+        <div class="col-md-4">
+            <img src="{{ url_for('static', filename='trumpetman.jpg') }}" alt="Trumpet" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            <h3>Conversions</h3>
+            <p>Struggling with learning the notes with the fingerings? Select your instrument above and let's practice!</p>
+        </div>
+        <div class="col-md-4">
+            <img src="{{ url_for('static', filename='man.jpg') }}" alt="Man playing instrument" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            <h3>Personalized Practice</h3>
+            <p>Keep track of your progress and improve your skills with our practice log, timer and metronome.</p>
+        </div>
+        <div class="col-md-4">
+            <img src="{{ url_for('static', filename='tromboneman.jpg') }}" alt="Baritone" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            <h3>Music</h3>
+            <p>Have a piece you are struggling to learn? Simply use our conversion software and practice away.</p>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <h2>Why Choose Us?</h2>
+        <p>Our app offers an easy-to-use interface, personalized practice tools, and a supportive community of musicians. Whether you're just starting out or looking to perfect your craft, we're here to help you every step of the way!</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}" role="button">Join Now!</a>
+    </div>
+</div>
+{% endblock %}

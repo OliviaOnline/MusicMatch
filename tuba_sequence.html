@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Tuba Techniques & Valve Position Finder</h2>
+
+    <!-- Tuba Playing Section -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='tuba1.jpg') }}" class="card-img-top" alt="Tuba Playing Technique" style="object-fit: cover; height: 200px;">
+                <div class="card-body">
+                    <h4 class="card-title">Playing the Tuba</h4>
+                    <p class="card-text">Blow through the mouthpiece with an "o" shape using your lips. Press the mouthpiece firmly against your lips, inhale deeply, and blow out. Keep the corners of your lips tight and the center loose to produce a good tone. Avoid puffing your cheeks as it may cause a rough sound.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='tuba2.jpg') }}" class="card-img-top" alt="Tuba Fingerings" style="object-fit: cover; height: 200px;">
+                <div class="card-body">
+                    <h4 class="card-title">Playing Higher and Lower Notes</h4>
+                    <p class="card-text">For higher notes, tighten your lips and increase the air speed. For lower notes, relax your lips and maintain a steady airflow. Ensure the air remains steady and avoid unnecessary pressure on the mouthpiece.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Sequence Converter Section -->
+    <div class="card p-4 mb-5">
+        <h3 class="card-title mb-3">Tuba Fingerings Finder</h3>
+        <p class="card-text mb-4">Enter a sequence of notes to find the corresponding fingerings for the tuba. Notes should be separated by spaces (e.g., C D E F G).</p>
+
+        <form method="post">
+            <div class="form-group mb-3">
+                <label for="notes_sequence">Enter Sequence of Notes:</label>
+                <input type="text" class="form-control" id="notes_sequence" name="notes_sequence" placeholder="C D E F G" required>
+                <small class="form-text text-muted">Separate notes with spaces (e.g., C D E F G).</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Find Fingerings</button>
+        </form>
+
+        {% if sequence_result is not none %}
+        <div class="mt-4">
+            <h4>Your Notes:</h4>
+            <p class="lead">{{ notes_sequence | join(' ') }}</p>
+            <h4>Fingerings:</h4>
+            <p class="lead">{{ sequence_result | join(' ') }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

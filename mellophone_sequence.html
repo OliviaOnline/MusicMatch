@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Mellophone Techniques & Valve Position Finder</h2>
+
+    <!-- Mellophone Playing Section -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='mellophone1.jpg') }}" class="card-img-top" alt="Mellophone Embouchure" style="object-fit: cover; height: 200px;">
+                <div class="card-body">
+                    <h4 class="card-title">Playing the Mellophone</h4>
+                    <p class="card-text">Blow through the mouthpiece using a relaxed embouchure, and keep the corners of your mouth firm. Inhale deeply and blow out through the instrument, making sure to support the air with your diaphragm.</p>
+                    <p class="card-text">For higher notes, tighten your embouchure and increase air speed. For lower notes, relax your embouchure and maintain steady air flow.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='mellophone2.jpg') }}" class="card-img-top" alt="Mellophone Valve Positions" style="object-fit: cover; height: 200px;">
+                <div class="card-body">
+                    <h4 class="card-title">Valve Positions</h4>
+                    <p class="card-text">Understanding valve positions is key to playing the mellophone effectively. Use the following tips to practice and refine your technique:</p>
+                    <ul>
+                        <li>Experiment with different valve combinations to find the correct pitch for each note.</li>
+                        <li>Practice smooth transitions between valve positions for better tone control.</li>
+                        <li>Use a tuner to ensure accuracy in pitch and valve combinations.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Sequence Converter Section -->
+    <div class="card p-4 mb-5">
+        <h3 class="card-title mb-3">Mellophone Valve Position Finder</h3>
+        <p class="card-text mb-4">Enter a sequence of notes to find the corresponding valve positions. For accurate fingerings, make sure to specify if a note is particularly high or low. Prefix high notes with <code>Hi</code> and low notes with <code>Lo</code>. For example, type <code>HiF</code> for high F and <code>LoF#</code> for low F#.</p>
+
+        <form method="post">
+            <div class="form-group mb-3">
+                <label for="notes_sequence">Enter Sequence of Notes:</label>
+                <input type="text" class="form-control" id="notes_sequence" name="notes_sequence" placeholder="C D E F G" required>
+                <small class="form-text text-muted">Separate notes with spaces (e.g., C D E F G). Use <code>Hi</code> for high notes and <code>Lo</code> for low notes (e.g., <code>HiF</code>, <code>LoF#</code>).</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Find Positions</button>
+        </form>
+
+        {% if sequence_result is not none %}
+        <div class="mt-4">
+            <h4>Your Notes:</h4>
+            <p class="lead">{{ notes_sequence | join(' ') }}</p>
+            <h4>Valve Positions:</h4>
+            <p class="lead">{{ sequence_result | join(' ') }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
